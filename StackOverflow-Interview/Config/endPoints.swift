@@ -19,8 +19,8 @@ let stackApiUrl = "https://api.stackexchange.com/2.2/"
 
 func getEndpointForSearchResult(SearchObjectModel:searchSOInputObjectModel) -> URL{
     let searchItem = SearchObjectModel.title.replacingOccurrences(of: " ", with: "%20")
-    print(searchItem)
-    var searchResultEndpoint = stackApiUrl + "search/advanced?page=\(SearchObjectModel.page)&pagesize=\(SearchObjectModel.pagesize)&order=desc&sort=activity&accepted=True&q=\(searchItem)&site=stackoverflow&filter=!9_bDDxJY5"
+//    print(searchItem)
+    var searchResultEndpoint = stackApiUrl + "search/advanced?page=\(SearchObjectModel.page)&pagesize=\(SearchObjectModel.pagesize)&order=desc&sort=relevance&accepted=True&q=\(searchItem)&site=stackoverflow&filter=!9_bDDxJY5"
     
     let endPointUrl: URL = URL(string: searchResultEndpoint)!
     return endPointUrl

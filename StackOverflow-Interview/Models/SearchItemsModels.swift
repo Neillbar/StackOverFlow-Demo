@@ -21,6 +21,11 @@ struct allSearchItems: Decodable{
     var items: [searchResultObjectModel]
 }
 
+struct internalError:Decodable{
+    var error_id: Int
+    var error_message:String
+}
+
 //Search Result Object
 struct searchResultObjectModel : Decodable {
     var tags: [String]
@@ -38,6 +43,7 @@ struct searchResultObjectModel : Decodable {
     var link:String
     var title:String
     var body:String
+    
 }
 
 

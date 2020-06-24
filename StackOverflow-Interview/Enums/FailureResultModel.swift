@@ -13,11 +13,12 @@ enum APIError: Error {
     case badResponse
     case InvalidJSONData // an error during the parsing of the json response
     case unknown(String) // some unknown error
-    case statusCode(StatusCodeError)
+    case internalError(String)
 }
 
-enum StatusCodeError: Int{
+enum StatusCodeError:Int{
     case internal_error = 500
     case throttle_violation = 502
     case temporarily_unavailable = 503
+    case unknown
 }

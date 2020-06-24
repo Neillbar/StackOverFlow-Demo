@@ -21,7 +21,6 @@
 		DA4F198E24994A480099C8B8 /* FailureResultModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4F198D24994A480099C8B8 /* FailureResultModel.swift */; };
 		DA4F199424995F960099C8B8 /* tvcSoSearchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4F199324995F960099C8B8 /* tvcSoSearchResult.swift */; };
 		DA4F199724996AE50099C8B8 /* HelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4F199624996AE50099C8B8 /* HelperFunctions.swift */; };
-		DA4F1999249974AA0099C8B8 /* YearEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4F1998249974AA0099C8B8 /* YearEnum.swift */; };
 		DAB79766249EA2C0005F8384 /* tvcDetailedContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB79765249EA2C0005F8384 /* tvcDetailedContent.swift */; };
 		DAB79768249FB9DC005F8384 /* cvcTags.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB79767249FB9DC005F8384 /* cvcTags.swift */; };
 		DAB7976C249FFFA2005F8384 /* AnswersModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB7976B249FFFA2005F8384 /* AnswersModels.swift */; };
@@ -61,7 +60,6 @@
 		DA4F198D24994A480099C8B8 /* FailureResultModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FailureResultModel.swift; sourceTree = "<group>"; };
 		DA4F199324995F960099C8B8 /* tvcSoSearchResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tvcSoSearchResult.swift; sourceTree = "<group>"; };
 		DA4F199624996AE50099C8B8 /* HelperFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperFunctions.swift; sourceTree = "<group>"; };
-		DA4F1998249974AA0099C8B8 /* YearEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YearEnum.swift; sourceTree = "<group>"; };
 		DAB79765249EA2C0005F8384 /* tvcDetailedContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tvcDetailedContent.swift; sourceTree = "<group>"; };
 		DAB79767249FB9DC005F8384 /* cvcTags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cvcTags.swift; sourceTree = "<group>"; };
 		DAB7976B249FFFA2005F8384 /* AnswersModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnswersModels.swift; sourceTree = "<group>"; };
@@ -165,7 +163,6 @@
 			isa = PBXGroup;
 			children = (
 				DA4F198D24994A480099C8B8 /* FailureResultModel.swift */,
-				DA4F1998249974AA0099C8B8 /* YearEnum.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -313,7 +310,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DA4F198824991CFC0099C8B8 /* endPoints.swift in Sources */,
-				DA4F1999249974AA0099C8B8 /* YearEnum.swift in Sources */,
 				DAB79768249FB9DC005F8384 /* cvcTags.swift in Sources */,
 				DA4F196024990E3B0099C8B8 /* HomeVC.swift in Sources */,
 				DAD37D7924A16D1400B71461 /* SearchBarClass.swift in Sources */,

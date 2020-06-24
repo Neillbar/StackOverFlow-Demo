@@ -9,7 +9,6 @@
 import UIKit
 
 class HomeVC: UIViewController,UISearchBarDelegate {
-
     //Initializers
     let stackOverFlowApiCalls = StackOverflowApiCalls()
     
@@ -26,6 +25,7 @@ class HomeVC: UIViewController,UISearchBarDelegate {
     var newPage = 2
     var searchInput : String = ""
     var lastSearchItem:searchSOInputObjectModel!
+    var appLifeCycle = true;
     
     //Constraints
     @IBOutlet weak var csUiViewErrorConstraints: NSLayoutConstraint!
@@ -33,10 +33,13 @@ class HomeVC: UIViewController,UISearchBarDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-        prepareUI()
-        searchForTopics(searchItem: "")
-    
+        
+        if appLifeCycle {
+            prepareUI()
+            searchForTopics(searchItem: "")
+            appLifeCycle = false;
+        }
+        
     }
     
     
@@ -45,16 +48,17 @@ class HomeVC: UIViewController,UISearchBarDelegate {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-         self.navigationController?.setNavigationBarHidden(false, animated: animated)
+        self.navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
-   func prepareUI(){
-//        txfSearchBar.layer.borderWidth = 1.0
-//        txfSearchBar.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
-//        txfSearchBar.layer.cornerRadius = 10
-//        txfSearchBar.searchTextField.layer.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+    func prepareUI(){
         csUiViewErrorConstraints.constant = 0
     }
+    
+    @IBAction func retryButtonWasPressed(_ sender: Any) {
+        searchForTopics(searchItem: lastSearchItem.title)
+    }
+    
     
     func searchForTopics(searchItem:String){
         //Make sure device has internet before making api call
@@ -75,21 +79,27 @@ class HomeVC: UIViewController,UISearchBarDelegate {
         stackOverFlowApiCalls.fetchSearchResult(searchObjectModel: lastSearchItem) { (result) in
             switch(result){
             case let .success(searchResult):
-                self.searchResultItems = searchResult
                 DispatchQueue.main.async {
                     self.disableLoadingIndicator()
+                    self.searchResultItems = searchResult
                     self.tvSearchresultTableView.reloadData()
+                    self.tvSearchresultTableView.scrollToFirst()
                 }
+                
             case let .failure(failureResponse ):
+//                print(failureResponse)
                 DispatchQueue.main.async {
-                    self.disableLoadingIndicator()
+                    var err:String;
                     switch failureResponse{
-                    case .statusCode(.throttle_violation):
-                        self.displayErrorMessage(error: "Oops too many attempts in such a short time, try again later")
+                    case let .internalError(error):
+                        err = error
                     default:
-                        self.displayErrorMessage(error: "We did something wrong, please try again later")
+                        err = "Something went wrong, please try again later"
                     }
-                   
+                    self.disableLoadingIndicator()
+                    self.displayErrorMessage(error: err)
+                    
+                    
                 }
                 
             }
@@ -113,14 +123,15 @@ class HomeVC: UIViewController,UISearchBarDelegate {
             case let .success(newSearchItems):
                 DispatchQueue.main.async {
                     if newSearchItems.items.count > 0 {
-                    self.disableLoadingIndicator()
-                    self.searchResultItems?.items.append(contentsOf: newSearchItems.items)
-                    self.tvSearchresultTableView.reloadData()
-                    self.newPage = self.newPage + 1
+                        self.disableLoadingIndicator()
+                        self.searchResultItems?.items.append(contentsOf: newSearchItems.items)
+                        self.tvSearchresultTableView.reloadData()
+                        self.newPage = self.newPage + 1
+                    }else{
+                         self.disableLoadingIndicator()
                     }
                 }
-            case let .failure(error):
-                print(error)
+            case .failure(_):
                 self.disableLoadingIndicator()
             }
         }
@@ -128,7 +139,6 @@ class HomeVC: UIViewController,UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchInput = searchBar.text ?? ""
-        print("search bar clicked")
         searchForTopics(searchItem: searchInput)
         searchBar.resignFirstResponder()
     }
@@ -159,9 +169,9 @@ class HomeVC: UIViewController,UISearchBarDelegate {
 extension HomeVC: UITableViewDelegate,UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("something")
+        txfSearchBar.resignFirstResponder()
         let vc = self.storyboard?.instantiateViewController(withIdentifier: "testStory") as! DetailVC
-//        self.present(vc,animated: true)
+        //        self.present(vc,animated: true)
         vc.searchResultItem = searchResultItems?.items[indexPath.row]
         self.navigationController?.pushViewController(vc, animated: true)
     }
@@ -178,19 +188,18 @@ extension HomeVC: UITableViewDelegate,UITableViewDataSource {
             let cell: tvcSoSearchResult = tableView.dequeueReusableCell(withIdentifier: "searchResultCell", for: indexPath) as! tvcSoSearchResult
             //Each Object
             let singleSearchResultItem:searchResultObjectModel = (searchResultItems?.items[indexPath.row])!
-
             //Set Items to Tableview
             cell.imgCheckMark.image = UIImage(named: "ic-check")
             cell.lblTitle.text = "Q: \(singleSearchResultItem.title)"
-            cell.lblBody.attributedText = NSAttributedString(html:singleSearchResultItem.body,fontSize: 10)
-            cell.lblDate.text = "\(convertIntDateToSearchResultDate(date: singleSearchResultItem.creation_date)) by \(singleSearchResultItem.owner?.display_name ?? "user_does_not_exist")"
+            cell.lblBody.attributedText = NSAttributedString(html:singleSearchResultItem.body,fontSize: 12)
+            cell.lblDate.text = "asked \(convertIntDateToSearchResultDate(date: singleSearchResultItem.creation_date)) by \(singleSearchResultItem.owner?.display_name ?? "user_does_not_exist")"
             cell.lblAnswerCount.text = "\(singleSearchResultItem.answer_count) answers"
             cell.lblVoteCount.text = "\(singleSearchResultItem.score) votes"
             cell.lblViewsCount.text = "\(singleSearchResultItem.view_count) views"
-
-             return cell
+            
+            return cell
         }else{
-            print("NO result i need to show another cell now")
+            //            print("NO result i need to show another cell now")
             let errorCell = tableView.dequeueReusableCell(withIdentifier: "errorCell", for: indexPath)
             errorCell.textLabel?.text = "NO RESULT FOUND"
             return errorCell
@@ -202,9 +211,8 @@ extension HomeVC: UITableViewDelegate,UITableViewDataSource {
         let currentOffset = scrollView.contentOffset.y
         let maximumOffset = scrollView.contentSize.height - scrollView.frame.size.height
         if maximumOffset - currentOffset <= 5 {
-                print("i went into this function for calling the api")
-                addMoreItemsToSearchList(page: newPage)
-
+            //                print("i went into this function for calling the api")
+            addMoreItemsToSearchList(page: newPage)
         }
     }
 }

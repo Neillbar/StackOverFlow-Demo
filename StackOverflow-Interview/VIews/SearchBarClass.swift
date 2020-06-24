@@ -10,15 +10,8 @@ import UIKit
 
 class SearchBarClass: UISearchBar {
 
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
-    }
-    */
     override func awakeFromNib() {
-           self.layer.borderWidth = 1.0
+             self.layer.borderWidth = 1.0
              self.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
              self.layer.cornerRadius = 10
              self.searchTextField.layer.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)

@@ -10,8 +10,7 @@ import UIKit
 
 class tvcSoSearchResult: UITableViewCell {
     
-    @IBOutlet weak var imgCheckMark: UIImageView!
-    
+    @IBOutlet weak var imgCheckMark: UIImageView!    
     @IBOutlet weak var lblAnswerCount: UILabel!
     @IBOutlet weak var lblVoteCount: UILabel!
     @IBOutlet weak var lblViewsCount: UILabel!
@@ -23,6 +22,8 @@ class tvcSoSearchResult: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        self.layer.borderWidth = 1
+        self.layer.borderColor = #colorLiteral(red: 0.6666666865, green: 0.6666666865, blue: 0.6666666865, alpha: 1)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

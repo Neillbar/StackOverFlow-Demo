@@ -39,7 +39,6 @@ class DetailVC: UIViewController {
     }
     
     @IBAction func errorRetryButtonWasPressed(_ sender: Any) {
-        print("SOmething is pressed")
         fetchAllAnswers(answersInputParametersModel: lastSelectedItem)
     }
     
@@ -52,14 +51,16 @@ class DetailVC: UIViewController {
         dismissErrorMessage()
         stackOverFlowApiCalls.fetchAnswersForQuestion(answersInputParametersModel: answersInputParametersModel) { (result) in
             switch result {
-            case let .failure(err):
+            case let .failure(failure):
                 DispatchQueue.main.async {
-                    switch err{
-                    case .statusCode(.throttle_violation):
-                        self.displayErrorMessage(error: "Oops too many attempts in such a short time, try again later")
+                    var err:String;
+                    switch failure{
+                    case let .internalError(error):
+                        err = error
                     default:
-                        self.displayErrorMessage(error: "We did something wrong, please try again later")
+                        err = "Something went wrong, please try again later"
                     }
+                    self.displayErrorMessage(error: err)
                 }
             case let .success(answers):
                 DispatchQueue.main.async {
@@ -73,17 +74,17 @@ class DetailVC: UIViewController {
     
     @objc func filterPressed(segment: UISegmentedControl){        
         if segment.selectedSegmentIndex == 0{
-            print("ACTIVE")
+//            ACTIVE
             lastSelectedItem = AnswersInputParametersModel(questionId: searchResultItem.question_id, order: "desc", sort: "activity")
             fetchAllAnswers(answersInputParametersModel: lastSelectedItem)
         }
         if segment.selectedSegmentIndex == 1{
-            print("OLDEST")
+//            OLDEST
             lastSelectedItem = AnswersInputParametersModel(questionId: searchResultItem.question_id, order: "asc", sort: "creation")
             fetchAllAnswers(answersInputParametersModel: lastSelectedItem)
         }
         if segment.selectedSegmentIndex == 2{
-            print("VOTES")
+//           VOTES
             lastSelectedItem = AnswersInputParametersModel(questionId: searchResultItem.question_id, order: "desc", sort: "votes")
             fetchAllAnswers(answersInputParametersModel: lastSelectedItem)
         }
@@ -112,7 +113,6 @@ extension DetailVC: UITableViewDelegate,UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if allAnswers?.items != nil && allAnswers?.items.count ?? 0 > 0 {
-            print("TOTAL OF ALL ANSWERS")
             return (allAnswers?.items.count)! + 3
         }else{
             return 3
@@ -120,8 +120,6 @@ extension DetailVC: UITableViewDelegate,UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        
         if indexPath.row == 0 {
             let cellTitle = tableView.dequeueReusableCell(withIdentifier: "cellTitle", for: indexPath) as! tvcDetailedContent
             cellTitle.lbltitle.text = searchResultItem.title
@@ -159,14 +157,16 @@ extension DetailVC: UITableViewDelegate,UITableViewDataSource {
             cellComments.layer.borderColor = #colorLiteral(red: 0.5500000119, green: 0.5500000119, blue: 0.5500000119, alpha: 1)
             cellComments.layer.borderWidth = 1
             cellComments.lblTotalVotes.text = "\(allAnswers!.items[indexPath.row - 3].score) Votes"
-            if allAnswers!.items[indexPath.row - 3].is_accepted {
+            print(allAnswers!.items[indexPath.row - 3].is_accepted)
+            if allAnswers!.items[indexPath.row - 3].is_accepted{
+                cellComments.imgCheckMark.isHidden = false
                 cellComments.imgCheckMark.image = UIImage(named: "ic-check")
             }else{
                 cellComments.imgCheckMark.isHidden = true
             }
             
             cellComments.lblAnswer.attributedText = NSAttributedString(html:allAnswers!.items[indexPath.row - 3].body,fontSize: 10)
-            cellComments.lblDatePosted.text = " posted \(convertIntToFullDateString(date: allAnswers!.items[indexPath.row - 3].creation_date))"
+            cellComments.lblDatePosted.text = " Answered \(convertIntToFullDateString(date: allAnswers!.items[indexPath.row - 3].creation_date))"
             
             if allAnswers!.items[indexPath.row - 3].owner?.profile_image != nil {
                 cellComments.imgAuthorProfileImage.imageFromServerURL(urlString: (allAnswers!.items[indexPath.row - 3].owner?.profile_image)!, PlaceHolderImage: UIImage(named: "logo")!)

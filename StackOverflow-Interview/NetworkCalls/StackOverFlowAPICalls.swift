@@ -28,26 +28,31 @@ class StackOverflowApiCalls {
                 
                 let httpUrlResponse = urlResponse as? HTTPURLResponse
                 
-                switch(httpUrlResponse?.statusCode){
-                case 500:
-                    completion(.failure(.statusCode(.internal_error)))
-                case 502:
-                    completion(.failure(.statusCode(.throttle_violation)))
-                case 503:
-                    completion(.failure(.statusCode(.temporarily_unavailable)))
-                default:
-                    print("NO FAILURE")
-                }
-                
                 guard  let jsonResponse = searchResult else {
                     completion(.failure(.InvalidJSONData))
                     return
                 }
+                
+                switch(httpUrlResponse?.statusCode){
+                case 400:
+                    do{
+                        let errorInResult = try JSONDecoder().decode(internalError.self, from: jsonResponse)
+                        completion(.failure(.internalError(self.handleInternalError(statusCodeError: errorInResult))))
+                        return
+                    }catch{
+                        completion(.failure(.apiError))
+                        return
+                    }
+                    
+                default:
+                    print("ALL GOOD ON STATUS CODE")
+                }
+                
                 do{
                     let finalSearchResult = try JSONDecoder().decode(allSearchItems.self, from: jsonResponse)
                     completion(.success(finalSearchResult))
-                }catch let decodableError{
-                    completion(.failure(.unknown(decodableError.localizedDescription)))
+                }catch {
+                    completion(.failure(.apiError))
                 }
                 self.dispatchGroup.leave()
             }
@@ -68,29 +73,29 @@ class StackOverflowApiCalls {
                     completion(.failure(.apiError))
                 }
                 
-                let httpUrlResponse = urlResponse as? HTTPURLResponse
-                
-                switch(httpUrlResponse?.statusCode){
-                case 500:
-                    completion(.failure(.statusCode(.internal_error)))
-                case 502:
-                    completion(.failure(.statusCode(.throttle_violation)))
-                case 503:
-                    completion(.failure(.statusCode(.temporarily_unavailable)))
-                default:
-                    print("NO FAILURE")
-                }
-                
                 guard  let jsonResponse = answers else {
                     completion(.failure(.InvalidJSONData))
                     return
                 }
                 
+                let httpUrlResponse = urlResponse as? HTTPURLResponse
+                switch(httpUrlResponse?.statusCode){
+                case 400:
+                    do{
+                        let errorInResult = try JSONDecoder().decode(internalError.self, from: jsonResponse)
+                        completion(.failure(.internalError(self.handleInternalError(statusCodeError: errorInResult))))
+                    }catch{
+                        completion(.failure(.apiError))
+                    }
+                    
+                default:
+                      print("ALL GOOD ON STATUS CODE")
+                }
                 do{
                     let finalSearchResult = try JSONDecoder().decode(allAnswersItems.self, from: jsonResponse)
                     completion(.success(finalSearchResult))
-                }catch let decodableError{
-                    completion(.failure(.unknown(decodableError.localizedDescription)))
+                }catch{
+                    completion(.failure(.apiError))
                 }
                 self.dispatchGroup.leave()
             }
@@ -99,9 +104,19 @@ class StackOverflowApiCalls {
         
     }//fetchAnswersForQuestion
     
-    
-    
-    
+    func handleInternalError(statusCodeError:internalError) -> String{
+        switch statusCodeError.error_id {
+        case 500:
+            return "We are experiencing an internal error, try again later"
+        case 502:
+            return "Too many requests were made from this IP, try again later"
+        case 503:
+            return "We are temporarily unavailable, try again later"
+        default:
+            return "Error unkown, try again later"
+        }
+        
+    }//handleInternalError
     
 }
 

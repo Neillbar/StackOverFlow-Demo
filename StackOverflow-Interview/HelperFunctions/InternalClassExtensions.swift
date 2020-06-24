@@ -21,7 +21,6 @@ extension NSAttributedString {
     }
 }
 
-
 extension Date {
     func timeAgoDisplay() -> String {
         let formatter = RelativeDateTimeFormatter()
@@ -41,7 +40,6 @@ extension UIImageView {
         URLSession.shared.dataTask(with: NSURL(string: urlString)! as URL, completionHandler: { (data, response, error) -> Void in
             
             if error != nil {
-                print(error ?? "No Error")
                 return
             }
             DispatchQueue.main.async(execute: { () -> Void in
@@ -51,3 +49,27 @@ extension UIImageView {
             
         }).resume()
     }}
+
+extension StringProtocol  {
+    var digits: [Int] { compactMap(\.wholeNumberValue) }
+}
+
+extension LosslessStringConvertible {
+    var string: String { .init(self) }
+}
+
+extension Numeric where Self: LosslessStringConvertible {
+    var digits: [Int] { string.digits }
+}
+
+extension UITableView {
+    
+    func scrollToFirst() {
+        for i in 0..<self.numberOfSections {
+            if self.numberOfRows(inSection: i) != 0 {
+                self.scrollToRow(at: IndexPath(row: 0, section: i), at: .top, animated: true)
+                break
+            }
+        }
+    }
+}

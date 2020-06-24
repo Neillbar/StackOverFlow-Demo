@@ -8,8 +8,6 @@
 
 import Foundation
 
-
-
 struct AnswersInputParametersModel {
     var questionId:Int
     var order:String
